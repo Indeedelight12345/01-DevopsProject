@@ -1,0 +1,7 @@
+{
+  "name": "LuxeMart - Modern E-Commerce",
+  "description": "A clean, minimal, and intuitive e-commerce mobile application featuring AI-powered product insights and a sleek user interface designed for young adults.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
