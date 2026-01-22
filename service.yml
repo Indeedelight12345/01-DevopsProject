@@ -1,0 +1,18 @@
+apiVersion: types.kubefed.io/v1beta1
+kind: FederatedService
+metadata:
+  name: nginx-service
+  namespace: test-federation
+spec:
+  template:
+    spec:
+      selector:
+        app: nginx
+      ports:
+      - name: http
+        port: 80
+        targetPort: 80
+  placement:
+    clusters:
+    - name: mycluster1
+    - name: mycluster2

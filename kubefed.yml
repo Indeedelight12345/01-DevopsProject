@@ -1,0 +1,10 @@
+apiVersion: types.kubefed.io/v1beta1
+kind: FederatedNamespace
+metadata:
+  name: test-federation
+  namespace: test-federation
+spec:
+  placement:
+    clusters:
+    - name: mycluster1
+    - name: mycluster2
