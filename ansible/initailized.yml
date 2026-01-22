@@ -1,0 +1,66 @@
+---
+- name: Initialize Cluster 1 (Production 1)
+  hosts: cluster1_masters
+  become: yes
+  tasks:
+    - name: Initialize Kubernetes on Master 1
+      command: kubeadm init --pod-network-cidr=10.244.0.0/16
+      args:
+        creates: /etc/kubernetes/admin.conf
+      register: cluster1_init
+
+    - name: Setup kubeconfig for k8sadmin
+      shell: |
+        mkdir -p /home/k8sadmin/.kube
+        cp -i /etc/kubernetes/admin.conf /home/k8sadmin/.kube/config
+        chown k8sadmin:k8sadmin /home/k8sadmin/.kube/config
+
+    - name: Install Flannel CNI
+      become: false
+      command: kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+
+    - name: Generate Join Command for Cluster 1
+      shell: kubeadm token create --print-join-command
+      register: join_command_1
+
+- name: Join Workers to Cluster 1
+  hosts: cluster1_workers
+  become: yes
+  tasks:
+    - name: Join Worker 1
+      shell: "{{ hostvars[groups['cluster1_masters'][0]]['join_command_1'].stdout }}"
+      args:
+        creates: /etc/kubernetes/kubelet.conf
+
+- name: Initialize Cluster 2 (Production 2)
+  hosts: cluster2_masters
+  become: yes
+  tasks:
+    - name: Initialize Kubernetes on Master 2 (Different CIDR)
+      command: kubeadm init --pod-network-cidr=10.245.0.0/16
+      args:
+        creates: /etc/kubernetes/admin.conf
+      register: cluster2_init
+
+    - name: Setup kubeconfig for k8sadmin
+      shell: |
+        mkdir -p /home/k8sadmin/.kube
+        cp -i /etc/kubernetes/admin.conf /home/k8sadmin/.kube/config
+        chown k8sadmin:k8sadmin /home/k8sadmin/.kube/config
+
+    - name: Install Flannel CNI
+      become: false
+      command: kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+
+    - name: Generate Join Command for Cluster 2
+      shell: kubeadm token create --print-join-command
+      register: join_command_2
+
+- name: Join Workers to Cluster 2
+  hosts: cluster2_workers
+  become: yes
+  tasks:
+    - name: Join Worker 2
+      shell: "{{ hostvars[groups['cluster2_masters'][0]]['join_command_2'].stdout }}"
+      args:
+        creates: /etc/kubernetes/kubelet.conf

@@ -1,57 +1,29 @@
-output "vpc_network_id" {
-  value       = module.network.network_id
-  description = "VPC Network ID"
+output "cluster1_master_ip" {
+  description = "External IP of Cluster 1 Master"
+  value       = module.cluster1_master.external_ip
 }
 
-output "vpc_network_name" {
-  value       = module.network.network_name
-  description = "VPC Network Name"
+output "cluster1_worker_ip" {
+  description = "External IP of Cluster 1 Worker"
+  value       = module.cluster1_worker.external_ip
 }
 
-output "subnet_id" {
-  value       = module.network.subnet_id
-  description = "Subnet ID"
+output "cluster2_master_ip" {
+  description = "External IP of Cluster 2 Master"
+  value       = module.cluster2_master.external_ip
 }
 
-output "subnet_name" {
-  value       = module.network.subnet_name
-  description = "Subnet Name"
+output "cluster2_worker_ip" {
+  description = "External IP of Cluster 2 Worker"
+  value       = module.cluster2_worker.external_ip
 }
 
-output "firewall_rules" {
-  value       = module.network.firewall_rules
-  description = "Created firewall rules"
-}
-
-output "instance_ids" {
-  value       = module.compute.instance_ids
-  description = "IDs of the created instances"
-}
-
-output "instance_names" {
-  value       = module.compute.instance_names
-  description = "Names of the created instances"
-}
-
-output "instance_internal_ips" {
-  value       = module.compute.instance_internal_ips
-  description = "Internal IP addresses of the instances"
-}
-
-output "instance_external_ips" {
-  value       = module.compute.instance_external_ips
-  description = "External IP addresses of the instances"
-}
-
-output "instance_zones" {
-  value       = module.compute.instance_zones
-  description = "Zones of the instances"
-}
-
-output "ssh_connection_strings" {
+output "all_vm_ips" {
+  description = "Map of all VM external IPs"
   value = {
-    for idx, name in module.compute.instance_names :
-    name => "gcloud compute ssh ${name} --zone=${var.region}-a"
+    cluster1_master = module.cluster1_master.external_ip
+    cluster1_worker = module.cluster1_worker.external_ip
+    cluster2_master = module.cluster2_master.external_ip
+    cluster2_worker = module.cluster2_worker.external_ip
   }
-  description = "SSH connection strings for each instance"
 }

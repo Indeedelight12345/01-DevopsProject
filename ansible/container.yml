@@ -1,0 +1,24 @@
+---
+- name: Fix CRI and Containerd on all nodes
+  hosts: all
+  become: yes
+  tasks:
+    - name: Remove old containerd config
+      file:
+        path: /etc/containerd/config.toml
+        state: absent
+
+    - name: Generate clean default config
+      shell: containerd config default > /etc/containerd/config.toml
+
+    - name: Enable CRI and SystemdCgroup
+      shell: |
+        sed -i 's/disabled_plugins = \[ "cri" \]/disabled_plugins = \[\]/' /etc/containerd/config.toml
+        sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+
+    - name: Restart and enable containerd
+      systemd:
+        name: containerd
+        state: restarted
+        enabled: yes
+        daemon_reload: yes
