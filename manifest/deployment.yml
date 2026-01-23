@@ -20,4 +20,4 @@ spec:
         image: rukevweubio/my-ecommerceapp:latest
         ports:
         - containerPort: 80  
-       "
+       
